@@ -1,0 +1,39 @@
+#1 basic.f --------- modify background flow around L42-84 in basic.f
+
+   the default background is seasonal mean. so replace the months with what your project requires;
+   if one month is needed, just replace all the three months with the same month as required.
+   
+   the monthly data are derived from NCEP T42, with a resolution of 2.8125 lon x 2.79 lat as 128x64  (the resolution is given to get the grid of heating domain)
+   
+  
+#2 heat.f --------- add heating/cooling profile around L85 in heat.f
+   
+   there are 5 layers as sigma = 0.1, 0.3, 0.5, 0.7, 0.9
+   heating region is oval-like at each layer. For example, we have got an anomalous heating region as latSt-latLt/lonSt-lonLt: 32-55N/50-25W
+   
+   L85:
+   if(i.gt.xSt .and. i.lt.xLt .and. j.gt.ySt .and. j.lt.yLt)
+     *  hhhh=(cos((i- xMd )/ dx *pih)**2)*(cos((j-yMd)/dy*pih)**2)*(a)    
+     
+   xSt  = lonSt/2.8125;  
+   xLt  = lonLt/2.8125;
+   ySt  = (latSt+90)/2.79;
+   yLt  = (latLt+90)/2.79;
+   xMd  = (xSt + xLt)/2.0;  yMd  = (ySt + yLt)/2.0  
+   dx   = (xLt - xSt)/2.0;  dy   = (yLt - ySt)/2.0
+   
+   a  usually refers to the heating intensity at 500 hPa (sigma = 0.5)
+     
+   e.g.
+   if(i.gt.110 .and.i.lt.120 .and. j.gt.43 .and. j.lt.52)
+     *  hhhh=(cos((i-115)/5.*pih)**2)*(cos((j-47.5)/4.5*pih)**2)*(1.0)
+     
+   **** each exp needs two sub-exps as one with heating anomalies (*a) and the other one with cooling anomalies (*-a). the cooling sub-exp is just to *(-a)
+
+#3 csh run
+   On SEE cluster, csh run_marco
+   
+   
+
+  
+   
